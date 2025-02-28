@@ -9,8 +9,8 @@ class RepositorioUsuarioSQLite(RepositorioUsuario):
     def adicionar(self, usuario: Usuario) -> None:
         conn = conectar()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO usuarios (id, nome, email, senha, perfil) VALUES (?, ?, ?, ?, ?)",
-                       (usuario.id, usuario.nome, usuario.email, usuario.senha, usuario.perfil))
+        cursor.execute("INSERT INTO usuarios (nome, usuario, senha, perfil) VALUES (?, ?, ?, ?, ?)",
+                       (usuario.nome, usuario.usuario, usuario.senha, usuario.perfil))
         conn.commit()
         conn.close()
 
@@ -32,7 +32,7 @@ class RepositorioUsuarioSQLite(RepositorioUsuario):
         cursor = conn.cursor()
         comando = "SELECT * FROM usuarios"
         cursor.execute(comando)
-        linhas = cursor.fetchone()
+        linhas = cursor.fetchall()
         conn.close()
         usuarios = []
         if linhas:
@@ -43,7 +43,7 @@ class RepositorioUsuarioSQLite(RepositorioUsuario):
     def remover(self, id):
         conn = conectar()
         cursor = conn.cursor()
-        comando = "DELETE FROM usuarios WHERE id = {}".format(id)
-        cursor.execute(comando)
+        comando = "DELETE FROM usuarios WHERE id = ?"
+        cursor.execute(comando,(id,))
         conn.commit()
         conn.close()

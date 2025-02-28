@@ -108,18 +108,21 @@ def abrir_tela_cadastro_usuario(usuario_logado):
 
      # Frame para agrupar a tabela
     tree_frame = ttk.Frame(janela_cadastro, padding=10)
-    tree_frame.grid(row=3, column=0, columnspan=2, pady=10)
+    tree_frame.grid(row=2, column=0, columnspan=2, pady=10)
 
     tree_scroll = ttk.Scrollbar(tree_frame)
     tree_scroll.pack(side="right", fill="y")
 
     # Tabela de Usuários
-    tree = ttk.Treeview(tree_frame, columns=("ID", "Nome", "Usuário", "Perfil"), show="headings")
-    for coluna in ("ID", "Nome", "Usuário", "Perfil"):
-        tree.heading(coluna, text=coluna)
-    tree.grid(row=6, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+    tree = ttk.Treeview(tree_frame, columns=("ID", "Nome", "Usuário", "Perfil"), show="headings", yscrollcommand=tree_scroll.set)
     tree_scroll.config(command=tree.yview)
     tree.bind("<ButtonRelease-1>", preencher_campos)
+
+    for coluna in ("ID", "Nome", "Usuário", "Perfil"):
+        tree.heading(coluna, text=coluna)
+
+    # tree.grid(row=6, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+    tree.pack(expand=True, fill="both")
 
     listar_usuarios()
     janela_cadastro.mainloop()

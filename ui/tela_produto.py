@@ -21,7 +21,6 @@ def adicionar_produto(usuario):
     try:
         if validar_campos(nome_entry.get(), quantidade_entry.get(), preco_entry.get(), estoque_minimo_entry.get()):
             produto = servico_produto.adicionar_produto(
-                int(id_entry.get()),
                 nome_entry.get(),
                 int(quantidade_entry.get()),
                 float(preco_entry.get()),
@@ -44,11 +43,11 @@ def atualizar_produto(usuario):
             return
         
         produto = Produto(
-            int(produto_id_str),
-            nome_entry.get(),
-            int(quantidade_entry.get()),
-            float(preco_entry.get()),
-            int(estoque_minimo_entry.get())
+            id=int(produto_id_str),
+            nome=nome_entry.get(),
+            quantidade=int(quantidade_entry.get()),
+            preco=float(preco_entry.get()),
+            estoque_minimo=int(estoque_minimo_entry.get())
         )
         servico_produto.atualizar_produto(produto)
         messagebox.showinfo("Sucesso", "Produto atualizado com sucesso!")
@@ -91,7 +90,8 @@ def listar_produtos(produtos=None):
     
     # id_entry.grid_remove()
     for produto in produtos:
-        tags = ("estoque_baixo",) if produto.quantidade < produto.estoque_minimo else ("")
+        # tags = ("estoque_baixo",) if produto.quantidade < produto.estoque_minimo else ("")
+        tags = ("estoque_baixo",) if int(produto.quantidade) < int(produto.estoque_minimo) else ("")
         tree.insert("", "end", values=(produto.id, produto.nome, produto.quantidade, produto.preco, produto.estoque_minimo), tags=tags)
 
 def preencher_campos(event):

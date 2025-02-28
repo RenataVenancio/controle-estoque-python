@@ -57,7 +57,7 @@ class RepositorioProdutoSQLite(RepositorioProduto):
         conn = conectar()
         cursor = conn.cursor()
         comando = "DELETE FROM produtos WHERE id = ?"
-        cursor.execute(comando,(id))
+        cursor.execute(comando,(id,))
         conn.commit()
         conn.close()
 
