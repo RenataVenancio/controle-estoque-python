@@ -1,3 +1,4 @@
+import bcrypt
 from core.repositorio import RepositorioUsuario
 from core.usuario import Usuario
 from infra.banco import conectar
@@ -9,7 +10,7 @@ class RepositorioUsuarioSQLite(RepositorioUsuario):
     def adicionar(self, usuario: Usuario) -> None:
         conn = conectar()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO usuarios (nome, usuario, senha, perfil) VALUES (?, ?, ?, ?, ?)",
+        cursor.execute("INSERT INTO usuarios (nome, usuario, senha, perfil) VALUES (?, ?, ?, ?)",
                        (usuario.nome, usuario.usuario, usuario.senha, usuario.perfil))
         conn.commit()
         conn.close()
@@ -47,3 +48,35 @@ class RepositorioUsuarioSQLite(RepositorioUsuario):
         cursor.execute(comando,(id,))
         conn.commit()
         conn.close()
+
+    def gerar_hash_senha(self, senha: str) -> str:
+        return bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+    def atualizar(self, usuario: Usuario):
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+        if usuario.senha:
+            cursor.execute('''
+                UPDATE usuarios
+                SET nome = ?, usuario = ?, senha = ?, perfil = ?
+                WHERE id = ?
+            ''', (usuario.nome, usuario.usuario, usuario.senha, usuario.perfil, usuario.id))
+        else:
+            cursor.execute('''
+                UPDATE usuarios
+                SET nome = ?, usuario = ?, perfil = ?
+                WHERE id = ?
+            ''', (usuario.nome, usuario.usuario, usuario.perfil, usuario.id))
+
+        conexao.commit()
+        conexao.close()
+
+    def remover(self, id: int):
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+        cursor.execute('''DELETE FROM usuarios WHERE id = ?''', (id,))
+
+        conexao.commit()
+        conexao.close()

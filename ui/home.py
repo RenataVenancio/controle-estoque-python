@@ -11,7 +11,7 @@ def abrir_tela_boas_vindas(perfil_usuario):
     # Mensagem de boas-vindas
     ttk.Label(janela_boas_vindas, text="Bem-vindo ao Sistema de Controle de Estoque", font=("Arial", 14)).pack(pady=20)
 
-    # Botão para Cadastrar Usuário (Sem ação no momento)
+    # Botão para Cadastrar Usuário
     botao_cadastrar_usuario = ttk.Button(janela_boas_vindas, text="Cadastrar Usuário", command=lambda: abrir_tela_cadastro_usuario(perfil_usuario))
     botao_cadastrar_usuario.pack(pady=20)
 
@@ -20,3 +20,4 @@ def abrir_tela_boas_vindas(perfil_usuario):
     botao_gerenciar_produto.pack(pady=20)
 
     janela_boas_vindas.mainloop()
+

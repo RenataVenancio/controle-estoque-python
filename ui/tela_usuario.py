@@ -28,7 +28,7 @@ def abrir_tela_cadastro_usuario(usuario_logado):
             return
 
         try:
-            novo_usuario = Usuario(None, nome, usuario, senha, perfil)
+            novo_usuario = Usuario(id=None, nome=nome, usuario=usuario, senha=senha, perfil=perfil)
             servico_usuario.adicionar_usuario(novo_usuario)
             registrar_log(usuario_logado, "CADASTRO", f"Usuário {usuario} cadastrado com perfil {perfil}")
             messagebox.showinfo("Sucesso", f"Usuário {usuario} cadastrado com sucesso!")
@@ -52,8 +52,10 @@ def abrir_tela_cadastro_usuario(usuario_logado):
 
         valores = tree.item(selecionado[0], "values")
 
+        id_entry.config(state="normal")
         id_entry.delete(0, tk.END)
         id_entry.insert(0, valores[0])
+        id_entry.config(state="disabled")
 
         nome_entry.delete(0, tk.END)
         nome_entry.insert(0, valores[1])
@@ -63,8 +65,53 @@ def abrir_tela_cadastro_usuario(usuario_logado):
 
         perfil_combobox.set(valores[3])
 
+    def atualizar_usuario():
+        try:
+            id_usuario = id_entry.get().strip()
+            nome = nome_entry.get().strip()
+            usuario = usuario_entry.get().strip()
+            senha = senha_entry.get().strip()
+            perfil = perfil_combobox.get().strip().lower()
+
+            if not id_usuario or not nome or not usuario or not perfil:
+                messagebox.showerror("Erro", "Todos os campos (exceto senha) são obrigatórios para atualizar.")
+                return
+
+            if perfil not in ("admin", "comum"):
+                messagebox.showerror("Erro", "Perfil inválido. Escolha 'admin' ou 'comum'.")
+                return
+
+            usuario_atualizado = Usuario(id=int(id_usuario), nome=nome, usuario=usuario, senha=senha if senha else None, perfil=perfil)
+            servico_usuario.atualizar_usuario(usuario_atualizado)
+            registrar_log(usuario_logado, "ATUALIZAR", f"Usuário {usuario} atualizado.")
+            messagebox.showinfo("Sucesso", "Usuário atualizado com sucesso!")
+            listar_usuarios()
+            limpar_campos()
+
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao atualizar usuário: {e}")
+
+    def remover_usuario():
+        try:
+            id_usuario = id_entry.get().strip()
+            if not id_usuario:
+                messagebox.showerror("Erro", "Selecione um usuário para remover.")
+                return
+
+            confirmar = messagebox.askyesno("Confirmação", "Tem certeza que deseja remover este usuário?")
+            if confirmar:
+                servico_usuario.remover_usuario(int(id_usuario))
+                registrar_log(usuario_logado, "REMOVER", f"Usuário ID {id_usuario} removido.")
+                messagebox.showinfo("Sucesso", "Usuário removido com sucesso!")
+                listar_usuarios()
+                limpar_campos()
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao remover usuário: {e}")
+
     def limpar_campos():
+        id_entry.config(state="normal")
         id_entry.delete(0, tk.END)
+        id_entry.config(state="disabled")
         nome_entry.delete(0, tk.END)
         usuario_entry.delete(0, tk.END)
         senha_entry.delete(0, tk.END)
@@ -93,7 +140,7 @@ def abrir_tela_cadastro_usuario(usuario_logado):
     usuario_entry = ttk.Entry(form_frame)
     usuario_entry.grid(row=2, column=1, padx=5, pady=5)
 
-    ttk.Label(form_frame, text="Senha:").grid(row=3, column=0, padx=5, pady=5)
+    ttk.Label(form_frame, text="Senha (Deixe em branco para manter):").grid(row=3, column=0, padx=5, pady=5)
     senha_entry = ttk.Entry(form_frame, show="*")
     senha_entry.grid(row=3, column=1, padx=5, pady=5)
 
@@ -104,7 +151,10 @@ def abrir_tela_cadastro_usuario(usuario_logado):
     # Frame para agrupar os botões
     button_frame = ttk.Frame(janela_cadastro, padding=10)
     button_frame.grid(row=1, column=0, sticky="ew", padx=10)
+
     ttk.Button(button_frame, text="Cadastrar", command=cadastrar_usuario).grid(row=5, column=0, columnspan=2, pady=20)
+    ttk.Button(button_frame, text="Atualizar", command=atualizar_usuario).grid(row=5, column=2, columnspan=2, pady=20)
+    ttk.Button(button_frame, text="Remover", command=remover_usuario).grid(row=5, column=4, columnspan=2, pady=20)
 
      # Frame para agrupar a tabela
     tree_frame = ttk.Frame(janela_cadastro, padding=10)

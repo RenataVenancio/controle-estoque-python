@@ -46,6 +46,10 @@ class RepositorioUsuario(ABC):
     def remover(self, id: int) -> None:
         pass
 
+    @abstractmethod
+    def atualizar(self, usuario: Usuario) -> None:
+        pass
+
     def gerar_hash_senha(self, senha: str):
         salt = bcrypt.gensalt()
         return bcrypt.hashpw(senha.encode('utf-8'), salt).decode('utf-8')
